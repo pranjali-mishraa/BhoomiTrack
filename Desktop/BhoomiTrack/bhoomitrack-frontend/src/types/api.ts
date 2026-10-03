@@ -164,4 +164,51 @@ export interface Project {
     verifiedBy?: string;
     verifiedAt?: string;
   }
+
+  export interface GeoJsonFeatureCollection {
+    type: "FeatureCollection";
   
+    features: Array<{
+      type: "Feature";
+      id: number;
+  
+      geometry: {
+        type: string;
+        coordinates: any;
+      };
+  
+      properties: {
+        parcelId: number;
+        parcelNumber: string;
+        surveyNumber: string;
+        ownerName: string;
+        area: number;
+        status: AcquisitionStatus;
+        color: string;
+        [key: string]: any;
+      };
+    }>;
+  }
+
+  export interface NationalDashboard {
+    totalProjects: number;
+  
+    totalLandRequired: number;
+    totalLandAcquired: number;
+    landAcquisitionPercentage: number;
+  
+    totalCompensationAssessed: number;
+    totalCompensationPaid: number;
+    compensationDisbursementPercentage: number;
+  
+    totalAffectedFamilies: number;
+    totalDisplacedFamilies: number;
+  
+    possessionProgressPercentage: number;
+    rrProgressPercentage: number;
+  
+    delayedProjectsCount: number;
+  
+    projectsByStatus: Record<string, number>;
+    projectsByType: Record<string, number>;
+  }

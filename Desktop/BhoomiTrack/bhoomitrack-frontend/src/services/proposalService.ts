@@ -6,8 +6,6 @@ import type {
   Proposal,
 } from "../types/api";
 
-// ==================== REQUEST TYPES ====================
-
 export interface ProposalListParams {
   projectId?: number;
   state?: string;
@@ -34,27 +32,49 @@ export interface CreateProposalPayload {
   remarks?: string;
 }
 
-export interface UpdateProposalStatusPayload {
-  status: Proposal["status"];
+export interface UpdateProposalPayload {
+  proposalNumber?: string;
+  projectId?: number;
+  projectName?: string;
+  landRequired?: number;
+  landUnit?: string;
+  villages?: string;
+  district?: string;
+  state?: string;
+  purpose?: string;
+  status?: Proposal["status"];
+  proposedTimelineMonths?: number;
+  affectedFamiliesCount?: number;
+  estimatedCompensation?: number;
   remarks?: string;
 }
 
-// ==================== GET ALL PROPOSALS ====================
+export interface ProposalActionPayload {
+  remarks?: string;
+}
+
+export interface ProposalHistoryRecord {
+  id: number;
+  proposalId?: number;
+  action?: string;
+  fromStatus?: Proposal["status"];
+  toStatus?: Proposal["status"];
+  remarks?: string;
+  performedBy?: string;
+  timestamp?: string;
+}
 
 export const getProposals = async (
   params: ProposalListParams = {}
 ): Promise<ApiResponse<PageResponse<Proposal>>> => {
-  const response = await apiClient.get<ApiResponse<PageResponse<Proposal>>>(
-    "/api/proposals",
-    {
-      params,
-    }
-  );
+  const response = await apiClient.get<
+    ApiResponse<PageResponse<Proposal>>
+  >("/api/proposals", {
+    params,
+  });
 
   return response.data;
 };
-
-// ==================== GET PROPOSAL BY ID ====================
 
 export const getProposalById = async (
   id: number
@@ -65,8 +85,6 @@ export const getProposalById = async (
 
   return response.data;
 };
-
-// ==================== CREATE PROPOSAL ====================
 
 export const createProposal = async (
   proposalData: CreateProposalPayload
@@ -79,11 +97,9 @@ export const createProposal = async (
   return response.data;
 };
 
-// ==================== UPDATE PROPOSAL ====================
-
 export const updateProposal = async (
   id: number,
-  proposalData: Partial<CreateProposalPayload>
+  proposalData: UpdateProposalPayload
 ): Promise<ApiResponse<Proposal>> => {
   const response = await apiClient.put<ApiResponse<Proposal>>(
     `/api/proposals/${id}`,
@@ -93,16 +109,60 @@ export const updateProposal = async (
   return response.data;
 };
 
-// ==================== UPDATE PROPOSAL STATUS ====================
-
-export const updateProposalStatus = async (
+export const submitProposal = async (
   id: number,
-  statusData: UpdateProposalStatusPayload
+  actionData: ProposalActionPayload = {}
 ): Promise<ApiResponse<Proposal>> => {
-  const response = await apiClient.patch<ApiResponse<Proposal>>(
-    `/api/proposals/${id}/status`,
-    statusData
+  const response = await apiClient.post<ApiResponse<Proposal>>(
+    `/api/proposals/${id}/submit`,
+    actionData
   );
+
+  return response.data;
+};
+
+export const approveProposal = async (
+  id: number,
+  actionData: ProposalActionPayload = {}
+): Promise<ApiResponse<Proposal>> => {
+  const response = await apiClient.post<ApiResponse<Proposal>>(
+    `/api/proposals/${id}/approve`,
+    actionData
+  );
+
+  return response.data;
+};
+
+export const returnProposal = async (
+  id: number,
+  actionData: ProposalActionPayload = {}
+): Promise<ApiResponse<Proposal>> => {
+  const response = await apiClient.post<ApiResponse<Proposal>>(
+    `/api/proposals/${id}/return`,
+    actionData
+  );
+
+  return response.data;
+};
+
+export const rejectProposal = async (
+  id: number,
+  actionData: ProposalActionPayload = {}
+): Promise<ApiResponse<Proposal>> => {
+  const response = await apiClient.post<ApiResponse<Proposal>>(
+    `/api/proposals/${id}/reject`,
+    actionData
+  );
+
+  return response.data;
+};
+
+export const getProposalHistory = async (
+  id: number
+): Promise<ApiResponse<ProposalHistoryRecord[]>> => {
+  const response = await apiClient.get<
+    ApiResponse<ProposalHistoryRecord[]>
+  >(`/api/proposals/${id}/history`);
 
   return response.data;
 };
